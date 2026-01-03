@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Emotional Intelligence ChatBot</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+<div class="container">
+    <h1>🧠 Emotional Intelligence ChatBot</h1>
+
+    <div id="chatbox"></div>
+
+    <input type="text" id="msg" placeholder="Type your feelings here..." />
+    <button onclick="sendMsg()">Send</button>
+
+    <div class="report">
+        <p id="overall"></p>
+    </div>
+</div>
+
+<script>
+function sendMsg() {
+    let msg = document.getElementById("msg").value;
+
+    fetch("/analyze", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ message: msg })
+    })
+    .then(res => res.json())
+    .then(data => {
+        let chat = document.getElementById("chatbox");
+        chat.innerHTML += `<div class='user'>You: ${msg}</div>`;
+        chat.innerHTML += `<div class='bot'>Bot: ${data.reply}</div>`;
+
+        document.getElementById("overall").innerText =
+          `Overall Mood: ${data.overall.label} | Avg: ${data.overall.avg} | ${data.overall.trend}`;
+
+        document.getElementById("msg").value = "";
+    });
+}
+</script>
+</body>
+</html>
